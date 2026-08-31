@@ -170,6 +170,20 @@
     ENDIF
     ENDM
     
+    ; ** fast casting for literals **
+
+    MAC pbyte_F_cint_byte ; @push
+    pint {1}
+    ENDM
+
+    MAC pbyte_F_cword_byte ; @push
+    pword {1}
+    ENDM
+
+    MAC pbyte_F_clong_byte ; @push
+    plong {1}
+    ENDM
+
     ; WORDS, INTS and DECIMALS
     
     ; Quick addition
@@ -428,11 +442,11 @@
     sta {3} + 1
     ENDM
     
-    MAC pwordvar_pwordvar_addword_plwordvar 
+    MAC pwordvar_pwordvar_addword_plwordvar
     pintvar_pintvar_addint_plintvar {1}, {2}, {3}
     ENDM
     
-    MAC pdecimalvar_pdecimalvar_adddecimal_pldecimalvar 
+    MAC pdecimalvar_pdecimalvar_adddecimal_pldecimalvar
     IF !USEIRQ
     sei
     ENDIF
@@ -671,6 +685,44 @@
     ENDIF
     ENDM
     
+    ; ** fast casting for literals **
+
+    MAC pint_F_cbyte_int ; @push
+    pbyte <{1}
+    ENDM
+
+    MAC pint_F_cword_int ; @push
+    pword {1}
+    ENDM
+
+    MAC pint_F_clong_int ; @push
+    plong {1}
+    ENDM
+
+    MAC pword_F_cbyte_word ; @push
+    pbyte <{1}
+    ENDM
+
+    MAC pword_F_cint_word ; @push
+    pint {1}
+    ENDM
+
+    MAC pword_F_clong_word ; @push
+    plong {1}
+    ENDM
+
+    MAC plong_F_cbyte_long ; @push
+    pbyte <{1}
+    ENDM
+
+    MAC plong_F_cint_long ; @push
+    pint {1}
+    ENDM
+
+    MAC plong_F_cword_long ; @push
+    pword {1}
+    ENDM
+
     ; Array access
     
     MAC pbytevar_pbytearrayfast ; @push
@@ -682,7 +734,7 @@
     ENDM
     
     ; Quick comparison of bytes
-    
+
     MAC pbyte_pbyte_cmpbyteeq ; @push
     lda #{1}
     cmp #{2}
@@ -693,7 +745,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbytevar_pbyte_cmpbyteeq ; @push
     lda {1}
     cmp #{2}
@@ -704,7 +756,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbyte_pbytevar_cmpbyteeq ; @push
     lda #{1}
     cmp {2}
@@ -715,7 +767,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbytevar_pbytevar_cmpbyteeq ; @push
     lda {1}
     cmp {2}
@@ -726,7 +778,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbyte_pbyte_cmpbyteneq ; @push
     lda #{1}
     cmp #{2}
@@ -737,7 +789,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbytevar_pbyte_cmpbyteneq ; @push
     lda {1}
     cmp #{2}
@@ -748,7 +800,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbyte_pbytevar_cmpbyteneq ; @push
     lda #{1}
     cmp {2}
@@ -759,7 +811,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbytevar_pbytevar_cmpbyteneq ; @push
     lda {1}
     cmp {2}
@@ -781,7 +833,7 @@
     pfalse
 .end
     ENDM
-    
+
     MAC pbytevar_pbyte_cmpbytelt ; @push
     lda {1}
     cmp #{2}
@@ -792,7 +844,7 @@
     pfalse
 .end
     ENDM
-    
+
     MAC pbyte_pbytevar_cmpbytelt ; @push
     lda #{1}
     cmp {2}
@@ -803,7 +855,7 @@
     pfalse
 .end
     ENDM
-    
+
     MAC pbytevar_pbytevar_cmpbytelt ; @push
     lda {1}
     cmp {2}
@@ -814,7 +866,7 @@
     pfalse
 .end
     ENDM
-    
+
     MAC pbyte_pbyte_cmpbytelte ; @push
     lda #{2}
     cmp #{1}
@@ -825,7 +877,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbyte_pbytevar_cmpbytelte ; @push
     lda {2}
     cmp #{1}
@@ -836,7 +888,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbytevar_pbyte_cmpbytelte ; @push
     lda #{2}
     cmp {1}
@@ -847,7 +899,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbytevar_pbytevar_cmpbytelte ; @push
     lda {2}
     cmp {1}
@@ -858,7 +910,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbyte_pbyte_cmpbytegte ; @push
     lda #{1}
     cmp #{2}
@@ -869,7 +921,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbytevar_pbyte_cmpbytegte ; @push
     lda {1}
     cmp #{2}
@@ -880,7 +932,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbyte_pbytevar_cmpbytegte ; @push
     lda #{1}
     cmp {2}
@@ -891,7 +943,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbytevar_pbytevar_cmpbytegte ; @push
     lda {1}
     cmp {2}
@@ -902,7 +954,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbyte_pbyte_cmpbytegt ; @push
     lda #{2}
     cmp #{1}
@@ -913,7 +965,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbyte_pbytevar_cmpbytegt ; @push
     lda {2}
     cmp #{1}
@@ -924,7 +976,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbytevar_pbyte_cmpbytegt ; @push
     lda #{2}
     cmp {1}
@@ -935,7 +987,7 @@
     ptrue
 .end
     ENDM
-    
+
     MAC pbytevar_pbytevar_cmpbytegt ; @push
     lda {2}
     cmp {1}
@@ -946,9 +998,9 @@
     ptrue
 .end
     ENDM
-    
+
      ; Quick comparison and branching
-    
+
     MAC pbyte_pbyte_cmpbyteeq_cond_stmt
     lda #{1}
     cmp #{2}
@@ -960,7 +1012,7 @@
     ENDIF
 .true:
     ENDM
-    
+
     MAC pbytevar_pbyte_cmpbyteeq_cond_stmt
     lda {1}
     cmp #{2}
@@ -972,7 +1024,7 @@
     ENDIF
 .true:
     ENDM
-    
+
     MAC pbyte_pbytevar_cmpbyteeq_cond_stmt
     lda #{1}
     cmp {2}
@@ -984,7 +1036,7 @@
     ENDIF
 .true:
     ENDM
-    
+
     MAC pbytevar_pbytevar_cmpbyteeq_cond_stmt
     lda {1}
     cmp {2}
@@ -996,7 +1048,7 @@
     ENDIF
 .true:
     ENDM
-    
+
     MAC pbyte_pbyte_cmpbyteneq_cond_stmt
     lda #{1}
     cmp #{2}
@@ -1008,7 +1060,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbytevar_pbyte_cmpbyteneq_cond_stmt
     lda {1}
     cmp #{2}
@@ -1020,7 +1072,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbyte_pbytevar_cmpbyteneq_cond_stmt
     lda #{1}
     cmp {2}
@@ -1032,7 +1084,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbytevar_pbytevar_cmpbyteneq_cond_stmt
     lda {1}
     cmp {2}
@@ -1056,7 +1108,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbytevar_pbyte_cmpbytelt_cond_stmt
     lda {1}
     cmp #{2}
@@ -1068,7 +1120,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbyte_pbytevar_cmpbytelt_cond_stmt
     lda #{1}
     cmp {2}
@@ -1080,7 +1132,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbytevar_pbytevar_cmpbytelt_cond_stmt
     lda {1}
     cmp {2}
@@ -1092,7 +1144,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbyte_pbyte_cmpbytelte_cond_stmt
     lda #{2}
     cmp #{1}
@@ -1104,7 +1156,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbyte_pbytevar_cmpbytelte_cond_stmt
     lda {2}
     cmp #{1}
@@ -1116,7 +1168,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbytevar_pbyte_cmpbytelte_cond_stmt
     lda #{2}
     cmp {1}
@@ -1128,7 +1180,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbytevar_pbytevar_cmpbytelte_cond_stmt
     lda {2}
     cmp {1}
@@ -1140,7 +1192,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbyte_pbyte_cmpbytegte_cond_stmt
     lda #{1}
     cmp #{2}
@@ -1152,7 +1204,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbytevar_pbyte_cmpbytegte_cond_stmt
     lda {1}
     cmp #{2}
@@ -1164,7 +1216,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbyte_pbytevar_cmpbytegte_cond_stmt
     lda #{1}
     cmp {2}
@@ -1176,7 +1228,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbytevar_pbytevar_cmpbytegte_cond_stmt
     lda {1}
     cmp {2}
@@ -1188,7 +1240,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbyte_pbyte_cmpbytegt_cond_stmt
     lda #{2}
     cmp #{1}
@@ -1200,7 +1252,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbyte_pbytevar_cmpbytegt_cond_stmt
     lda {2}
     cmp #{1}
@@ -1212,7 +1264,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbytevar_pbyte_cmpbytegt_cond_stmt
     lda #{2}
     cmp {1}
@@ -1224,7 +1276,7 @@
     ENDIF
 .true
     ENDM
-    
+
     MAC pbytevar_pbytevar_cmpbytegt_cond_stmt
     lda {2}
     cmp {1}

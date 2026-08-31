@@ -107,15 +107,15 @@ class ReplaceSequences: OptimizerPass
     private int replaceSequences()
     {
         bool optEnabled = false;
-        int replacementsMade = false;
+        int replacementsMade = 0;
         string[] lines = splitLines(this.inCode);
         opCode[] accumulatedSequence;
         string[] accumulatedCode;
-        
+
         size_t fullMatchLength = 0;
-        bool doFlushAccumulator = false;
 
         this.outCode = "";
+
         for(int i = 0; i < lines.length; i++) {
             string line = lines[i];
             if(line == "    ; !!opt_start!!") {
@@ -129,68 +129,61 @@ class ReplaceSequences: OptimizerPass
                 continue;
             }
 
-            auto expr = regex(r"\s+([a-zA-Z0-9_@]+)\s*(.+)?");
+            accumulatedCode ~= line;
+
+            auto expr = regex(r"^\s+([a-zA-Z0-9_@]+)\s*(.+)?");
             auto match = matchFirst(line, expr);
-            
+
+            string opcodeStr;
+            string arg = "";
+
             if(match) {
-                accumulatedCode ~= line;
-                string opcodeStr = match[1];
-                string arg = "";
-                if(match.length > 2) {
-                    arg = match[2];
-                }
-
-                opCode op = {opcodeStr, arg};
-                accumulatedSequence ~= op;
-                string seqString = this.stringifySequence(accumulatedSequence);
-
-                if(this.matchSequences(seqString)) {
-                    //stderr.writeln("match: " ~ seqString);
-                    if(this.fullMatch(seqString)) {
-                        fullMatchLength = accumulatedSequence.length;
-                    }
-                }
-                else {
-                    doFlushAccumulator = true;
-                }
+                opcodeStr = match[1];
+                arg = match[2];
             }
             else {
-                doFlushAccumulator = true;
+                opcodeStr = "$NOOPCODE$";
             }
 
-            if(doFlushAccumulator) {
+            opCode op = {opcodeStr, arg};
+            accumulatedSequence ~= op;
+
+            string seqString = this.stringifySequence(accumulatedSequence);
+
+            if(this.matchSequences(seqString)) {
+                if(this.fullMatch(seqString)) { fullMatchLength = accumulatedSequence.length; }
+            }
+            else {
+                // Flush the Accumulator
+
                 if(fullMatchLength > 0) {
-                    if(match) {
-                        this.outCode ~= "    " ~ this.stringifySequence(accumulatedSequence[0 .. fullMatchLength]) ~ " " ~ this.stringifyArgs(accumulatedSequence[0 .. fullMatchLength ]) ~ "\n";
-                        accumulatedSequence = accumulatedSequence[fullMatchLength .. $];
-                        accumulatedCode = accumulatedCode[fullMatchLength .. $];
-                    }
-                    else {
-                        this.outCode ~= "    " ~ this.stringifySequence(accumulatedSequence) ~ " " ~ this.stringifyArgs(accumulatedSequence) ~ "\n" ~ line ~ "\n";
-                        accumulatedSequence = [];
-                        accumulatedCode = [];
-                    }
-                    if (fullMatchLength > 1) {replacementsMade++;}
+                    this.outCode ~= "    " ~ this.stringifySequence(accumulatedSequence[0 .. fullMatchLength]) ~ " " ~ this.stringifyArgs(accumulatedSequence[0 .. fullMatchLength ]) ~ "\n";
+                    accumulatedSequence = accumulatedSequence[fullMatchLength .. $];
+                    accumulatedCode = accumulatedCode[fullMatchLength .. $];
+
+                    // if (fullMatchLength > 1) {replacementsMade++;}
                     fullMatchLength = 0;
                 }
                 else {
-                    if(match) {
+                    if (accumulatedCode[0] == "    ; !!opt_end!!") {
+                        this.outCode ~= join(accumulatedCode, "\n") ~ "\n";
+                        accumulatedSequence = [];
+                        accumulatedCode = [];
+                        optEnabled = false;
+                    }
+                    else {
                         this.outCode ~= accumulatedCode[0] ~ "\n";
                         accumulatedSequence = accumulatedSequence.remove(0);
                         accumulatedCode = accumulatedCode.remove(0);
                     }
-                    else {
-                        this.outCode ~= join(accumulatedCode, "\n") ~ (accumulatedCode.length ? "\n" : "") ~ line ~ "\n";
-                        accumulatedSequence = [];
-                        accumulatedCode = [];
-                    }
                 }
-                doFlushAccumulator = false;
+
+                for(int j = 2; j <= accumulatedSequence.length; j++) {
+                    seqString = this.stringifySequence(accumulatedSequence[0 .. j]);
+                    if(this.fullMatch(seqString)) { fullMatchLength = j ; }
+                }
             }
-            
-            if(line == "    ; !!opt_end!!") {
-                optEnabled = false;
-            }
+
         }
 
         return replacementsMade;
@@ -200,9 +193,9 @@ class ReplaceSequences: OptimizerPass
     {
         this.fetchSequences();
         int replacementsMade;
-        int i = 0;
+        // int i = 0;
         do {
-            i++;
+            // i++;
             replacementsMade = this.replaceSequences();
             import std.conv;
             //stderr.writeln("Pass " ~ to!string(i) ~ ": " ~ to!string(replacementsMade));
@@ -286,7 +279,7 @@ class RemoveStackOps: OptimizerPass
                     next_opc = this.getOpcode(next_line);
                     j++;
                 }
-                while(next_line == "");
+                while(next_line == "" || next_line.startsWith(";"));
 
                 if(this.isPuller(opc) && pushf) {
                     if(!pullf) {
