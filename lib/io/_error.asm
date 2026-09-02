@@ -38,9 +38,6 @@ SCINIT		 EQU $ff81
 	ENDIF
 	ENDM
 
-	; Return value of the ERR() function
-ERRNO HEX 00
-
 	; Default error handler
 	; redirect to custor handling routine if set
 	; or
@@ -65,6 +62,9 @@ RUNTIME_ERROR SUBROUTINE
 
 	; "error "
 .err HEX 06 45 52 52 4f 52 20
+
+	; Return value of the ERR() function
+ERRNO HEX 00
 
 	; Error redirection vector
 	; If HB = 0 errors won't be redirected
