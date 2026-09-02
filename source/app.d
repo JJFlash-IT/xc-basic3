@@ -18,7 +18,7 @@ import compiler.compiler, compiler.library, compiler.sourcefile;
 import globals, optimizer;
 
 // Program version
-const string APP_VERSION = "v3.1.13";
+const string APP_VERSION = "v3.1.14-JJ";
 
 /** Possible target options */
 const string[] targetOpts = [
@@ -42,10 +42,10 @@ const string[] targetOpts = [
 private bool optimize = true;
 private bool keepImCode = false;
 version(Windows) {
-	private string dasm = "dasm.exe";
+    private string dasm = "dasm.exe";
 }
 else {
-	private string dasm = "dasm";
+    private string dasm = "dasm";
 }
 private string symbolfile="";
 private string listfile="";
@@ -76,7 +76,7 @@ void main(string[] args)
             "inline-data|i", &inlineData
         );
     }
-	catch(Exception e) {
+    catch(Exception e) {
         stderr.writeln(e.msg);
         exit(1);
     }
@@ -85,7 +85,7 @@ void main(string[] args)
         displayHelp(0);
     }
 
-	validateOptions(args);
+    validateOptions(args);
     setStartAddress();
     setEndAddress();
     
@@ -141,21 +141,16 @@ void main(string[] args)
     
     outfile.close();
 
-    // Call DASM to compile intermediate code to exacutable
-    version(Windows) {
-        dasm = `"` ~ dasm ~ `"`;
-        asmFilename = `"` ~ asmFilename ~ `"`;
-        outName = `"` ~ outName ~ `"`;
-        if(listfile != "") {
-            listfile = `"` ~ listfile ~ `"`;
-        }
-    }
+    // Call DASM to compile intermediate code to executable
+    version(Windows) { enum string Q = `"`; }
+    else             { enum string Q = ``;  }
 
-    string cmd = dasm ~ " " ~ asmFilename ~ " -o" ~ outName ~ " -s" ~ tmpSymbolfile;
+    string cmd = Q ~ dasm ~ Q ~ " " ~ Q ~ asmFilename ~ Q ~ " -o" ~ Q ~ outName ~ Q ~ " -s" ~ Q ~ tmpSymbolfile ~ Q;
 
     if(listfile != "") {
-        cmd ~= " -l" ~ listfile;
+        cmd ~= " -l" ~ Q ~ listfile ~ Q;
     }
+
     auto dasm_cmd = executeShell(cmd);
     
     if(!keepImCode) {
@@ -168,11 +163,13 @@ void main(string[] args)
         }
         
     } else {
-        stdout.writeln("File containing intermediate code kept in " ~ asmFilename);
+        copy(asmFilename, to!string(fileName.withExtension("asm")));
+        remove(asmFilename);
+        stdout.writeln("File containing intermediate code kept in " ~ to!string(fileName.withExtension("asm")));
     }
     
     if(dasm_cmd.status != 0) {
-        stderr.writeln("** ERROR ** There has been an error while trying to execute DASM, please see the bellow message.");
+        stderr.writeln("** ERROR ** There has been an error while trying to execute DASM, please see the message below.");
         stderr.writeln("Tried to execute: " ~ cmd);
         stderr.writeln(dasm_cmd.output);
         stderr.writeln("Please submit this bug to https://github.com/neilsf/xc-basic3/issues");
