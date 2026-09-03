@@ -104,10 +104,9 @@ class ReplaceSequences: OptimizerPass
         return sequence.filter!(op => op.arg != "").map!(op => op.arg).join(", ");
     }
 
-    private int replaceSequences()
+    private void replaceSequences()
     {
         bool optEnabled = false;
-        int replacementsMade = 0;
         string[] lines = splitLines(this.inCode);
         opCode[] accumulatedSequence;
         string[] accumulatedCode;
@@ -161,7 +160,6 @@ class ReplaceSequences: OptimizerPass
                     accumulatedSequence = accumulatedSequence[fullMatchLength .. $];
                     accumulatedCode = accumulatedCode[fullMatchLength .. $];
 
-                    // if (fullMatchLength > 1) {replacementsMade++;}
                     fullMatchLength = 0;
                 }
                 else {
@@ -185,25 +183,12 @@ class ReplaceSequences: OptimizerPass
             }
 
         }
-
-        return replacementsMade;
     }
 
     override void run()
     {
         this.fetchSequences();
-        int replacementsMade;
-        // int i = 0;
-        do {
-            // i++;
-            replacementsMade = this.replaceSequences();
-            import std.conv;
-            //stderr.writeln("Pass " ~ to!string(i) ~ ": " ~ to!string(replacementsMade));
-            if(replacementsMade) {
-                this.inCode = this.outCode;
-            }
-        }
-        while(replacementsMade > 0);
+        this.replaceSequences();
     }
 }
 
